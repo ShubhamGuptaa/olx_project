@@ -1,6 +1,7 @@
 package com.atcs.olx.ServiceImple;
 
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,5 +43,20 @@ public class ServiceUsersImple implements ServiceUsers{
         Matcher m = p.matcher(password);
         return m.matches();
     }
+
+
+    @Override
+    public List<Register> getAllUsers() {
+        return  registerRepo.findAll();
+    }
     
+    @Override
+    public Register getUserById(long id){
+        return registerRepo.findById(id).get();
+    }
+
+    @Override
+    public Register updateUserPasswordById(Register register){
+        return registerRepo.save(register);
+    }
 }
