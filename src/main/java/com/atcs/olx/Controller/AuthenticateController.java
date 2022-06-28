@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.atcs.olx.Entity.Forgot;
+import com.atcs.olx.Entity.LogOut;
 import com.atcs.olx.Entity.Register;
-
+import com.atcs.olx.Entity.SignIn;
 import com.atcs.olx.Service.ServiceUsers;
 import com.google.common.hash.Hashing;
 
@@ -56,6 +57,7 @@ public class AuthenticateController {
             .toString());
 
             serviceUsers.registerUsers(register);
+            serviceUsers.setUserLoggedIn(register);
             msg = "Registration Successfull!";
             return  new ResponseEntity<String>(msg,HttpStatus.OK);
         }   
@@ -92,6 +94,68 @@ public class AuthenticateController {
         }
      
     }
+
+    // If user login/SignIn
+    @PostMapping("/signIn")
+    public ResponseEntity<String> signIn_User(@RequestBody SignIn signIn){
+        Matcher email_matcher = email.matcher(signIn.getEmail());
+        if(email_matcher.matches() == false){
+            msg = "Email is not valid! (e.g: email@email.com)";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else if(serviceUsers.isValidPassword(signIn.getPassword()) == false){
+            msg = "Password is not valid! (e.g: 8 characters length, 2 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else {
+            List<Register> allUsers = serviceUsers.getAllUsers();
+            for(Register r: allUsers){
+                if(r.getEmail().equals(signIn.getEmail())){
+                   Long id = r.getId();  
+                   Register getUser = serviceUsers.getUserById(id);
+                   if(getUser.getPassword().equals(Hashing.sha256()
+                   .hashString(signIn.getPassword(), StandardCharsets.UTF_8)
+                   .toString())){
+                    serviceUsers.setUserLoggedIn(getUser);
+                    msg = "Login Successfull!!";
+                    return new ResponseEntity<String>(msg,HttpStatus.OK);
+                   }else{
+                    msg = "Incorrect Password!";
+                    return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY); 
+                   }        
+                  
+                }
+            }
+                    
+        }
+        msg = "No account with this email id!";
+        return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
+    }
+
+    // LogOut User
+    @PostMapping("/logOut")
+    public ResponseEntity<String> logout_User(@RequestBody LogOut logOut){
+        Matcher email_matcher = email.matcher(logOut.getEmail());
+        if(email_matcher.matches() == false){
+            msg = "Email is not valid! (e.g: email@email.com)";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else {
+            List<Register> allUsers = serviceUsers.getAllUsers();
+            for(Register r: allUsers){
+                if(r.getEmail().equals(logOut.getEmail())){
+                   Long id = r.getId();  
+                   Register getUser = serviceUsers.getUserById(id);
+                    serviceUsers.setUserLoggedOut(getUser);
+                    msg = "LogOut Successfull!!";
+                    return new ResponseEntity<String>(msg,HttpStatus.OK);
+                   }                         
+                }
+            }
+        msg = "No account with this email id!";
+        return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
+    }
+
 }
 
 

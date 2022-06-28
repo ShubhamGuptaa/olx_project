@@ -59,4 +59,18 @@ public class ServiceUsersImple implements ServiceUsers{
     public Register updateUserPasswordById(Register register){
         return registerRepo.save(register);
     }
+
+
+    @Override
+    public boolean setUserLoggedIn(Register register) {
+        register.setUserLoggedIn(true);
+        registerRepo.save(register);
+        return true;
+    }
+    @Override
+    public boolean setUserLoggedOut(Register register) {
+        register.setUserLoggedIn(false);
+        registerRepo.save(register);
+        return false;
+    }
 }

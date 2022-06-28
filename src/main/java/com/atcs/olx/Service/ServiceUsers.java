@@ -13,5 +13,7 @@ public interface ServiceUsers {
     public Register getUserById(long id);
     public Register updateUserPasswordById(Register register);
     public boolean  isValidPassword(String password);
+    public boolean setUserLoggedIn(Register register);
+    public boolean setUserLoggedOut(Register register);
     
 }
