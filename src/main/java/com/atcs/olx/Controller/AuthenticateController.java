@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.atcs.olx.Entity.Admin_Register;
 import com.atcs.olx.Entity.Forgot;
 import com.atcs.olx.Entity.LogOut;
 import com.atcs.olx.Entity.Register;
 import com.atcs.olx.Entity.SignIn;
-import com.atcs.olx.Service.ServiceUsers;
+import com.atcs.olx.Service.ServiceAuthenticate;
 import com.google.common.hash.Hashing;
 
 
@@ -27,7 +28,7 @@ import com.google.common.hash.Hashing;
 public class AuthenticateController {
 
     @Autowired
-    ServiceUsers serviceUsers;
+    ServiceAuthenticate serviceUsers;
    
     String email_regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"; 
     Pattern email = Pattern.compile(email_regex); 
@@ -155,6 +156,131 @@ public class AuthenticateController {
         msg = "No account with this email id!";
         return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
     }
+
+
+    // Register New Admin
+    @PostMapping("/admin/register")
+    public ResponseEntity<String> admin_register(@RequestBody Admin_Register admin_register){
+        
+        Matcher email_matcher = email.matcher(admin_register.getEmail());
+
+        if(email_matcher.matches() == false){
+            msg = "Email is not valid! (e.g: email@email.com)";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else if(serviceUsers.isValidPassword(admin_register.getPassword()) == false){
+            msg = "Password is not valid! (e.g: 8 characters length, 2 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else if(admin_register.getPhone_number().length() < 10){
+            msg = "Incorrect phone number!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else{
+            admin_register.setPassword(Hashing.sha256()
+            .hashString(admin_register.getPassword(), StandardCharsets.UTF_8)
+            .toString());
+
+            serviceUsers.registerAdmin(admin_register);
+            serviceUsers.setAdminLoggedIn(admin_register);
+            msg = "Admin Registration Successfull!";
+            return  new ResponseEntity<String>(msg,HttpStatus.OK);
+        }   
+    }
+
+    // Admin login/SignIn
+    @PostMapping("/admin/signIn")
+    public ResponseEntity<String> signIn_Admin(@RequestBody SignIn signIn){
+        Matcher email_matcher = email.matcher(signIn.getEmail());
+        if(email_matcher.matches() == false){
+            msg = "Admin email is not valid! (e.g: email@email.com)";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else if(serviceUsers.isValidPassword(signIn.getPassword()) == false){
+            msg = "Admin password is not valid! (e.g: 8 characters length, 2 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else {
+            List<Admin_Register> allUsers = serviceUsers.getAllAdmin();
+            for(Admin_Register r: allUsers){
+                if(r.getEmail().equals(signIn.getEmail())){
+                   Long id = r.getId();  
+                   Admin_Register getAdmin = serviceUsers.getAdminById(id);
+                   if(getAdmin.getPassword().equals(Hashing.sha256()
+                   .hashString(signIn.getPassword(), StandardCharsets.UTF_8)
+                   .toString())){
+                    serviceUsers.setAdminLoggedIn(getAdmin);
+                    msg = "Admin Login Successfull!!";
+                    return new ResponseEntity<String>(msg,HttpStatus.OK);
+                   }else{
+                    msg = "Incorrect admin Password!";
+                    return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY); 
+                   }        
+                  
+                }
+            }
+                    
+        }
+        msg = "No admin account with this email id!";
+        return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
+    }
+
+    // If Admin Forgot their Password
+    @PutMapping("/admin/forgot_password")
+    public ResponseEntity<String> forgot_Admin_Password(@RequestBody Forgot forgot){
+        Matcher email_matcher = email.matcher(forgot.getEmail());
+        if(email_matcher.matches() == false){
+            msg = "Admin email is not valid! (e.g: email@email.com)";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else if(serviceUsers.isValidPassword(forgot.getPassword()) == false){
+            msg = "Admin password is not valid! (e.g: 8 characters length, 2 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else {
+            List<Admin_Register> allUsers = serviceUsers.getAllAdmin();
+            for(Admin_Register r: allUsers){
+                if(r.getEmail().equals(forgot.getEmail())){
+                   Long id = r.getId();
+                   Admin_Register getAdmin = serviceUsers.getAdminById(id);
+                   getAdmin.setPassword(Hashing.sha256()
+                   .hashString(forgot.getPassword(), StandardCharsets.UTF_8)
+                   .toString());
+                   serviceUsers.updateAdminPasswordById(getAdmin);
+                   msg = "Admin password reset Successfull!";
+                   return new ResponseEntity<String>(msg,HttpStatus.OK);
+                }
+            }
+            msg = "No admin account with this email id!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);           
+        }
+     
+    }
+
+    // LogOut Admin
+    @PostMapping("/admin/logOut")
+    public ResponseEntity<String> logout_Admin(@RequestBody LogOut logOut){
+        Matcher email_matcher = email.matcher(logOut.getEmail());
+        if(email_matcher.matches() == false){
+            msg = "Email is not valid! (e.g: email@email.com)";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+        else {
+            List<Admin_Register> allUsers = serviceUsers.getAllAdmin();
+            for(Admin_Register r: allUsers){
+                if(r.getEmail().equals(logOut.getEmail())){
+                   Long id = r.getId();  
+                   Admin_Register getAdmin = serviceUsers.getAdminById(id);
+                    serviceUsers.setAdminLoggedOut(getAdmin);
+                    msg = "Admin LogOut Successfull!!";
+                    return new ResponseEntity<String>(msg,HttpStatus.OK);
+                   }                         
+                }
+            }
+        msg = "No account with this email id!";
+        return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
+    }
+
 
 }
 
