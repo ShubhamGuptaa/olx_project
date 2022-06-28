@@ -1,11 +1,11 @@
-package com.atcs.olx.Service;
+package com.atcs.olx.Service.ServiceAuthenticate;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.atcs.olx.Entity.Admin_Register;
-import com.atcs.olx.Entity.Register;
+import com.atcs.olx.Entity.Authenticate.Admin_Register;
+import com.atcs.olx.Entity.Authenticate.Register;
 
 @Service
 public interface ServiceAuthenticate {

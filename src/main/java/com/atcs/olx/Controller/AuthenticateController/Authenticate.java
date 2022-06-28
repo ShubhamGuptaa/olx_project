@@ -1,4 +1,4 @@
-package com.atcs.olx.Controller;
+package com.atcs.olx.Controller.AuthenticateController;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -14,18 +14,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.atcs.olx.Entity.Admin_Register;
-import com.atcs.olx.Entity.Forgot;
-import com.atcs.olx.Entity.LogOut;
-import com.atcs.olx.Entity.Register;
-import com.atcs.olx.Entity.SignIn;
-import com.atcs.olx.Service.ServiceAuthenticate;
+import com.atcs.olx.Entity.Authenticate.Admin_Register;
+import com.atcs.olx.Entity.Authenticate.Forgot;
+import com.atcs.olx.Entity.Authenticate.LogOut;
+import com.atcs.olx.Entity.Authenticate.Register;
+import com.atcs.olx.Entity.Authenticate.SignIn;
+import com.atcs.olx.Service.ServiceAuthenticate.ServiceAuthenticate;
 import com.google.common.hash.Hashing;
 
+// To do
+// If email already exist then need to raise exception at the time of registration!
+/////////////////////////////////
 
 @RestController
 @RequestMapping("/olx")
-public class AuthenticateController {
+public class Authenticate {
 
     @Autowired
     ServiceAuthenticate serviceUsers;

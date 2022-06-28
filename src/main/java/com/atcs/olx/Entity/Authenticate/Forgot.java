@@ -1,11 +1,11 @@
-package com.atcs.olx.Entity;
+package com.atcs.olx.Entity.Authenticate;
 
-public class SignIn {
-    private String email;
-    private String password;
-    public SignIn() {
+public class Forgot {
+    public String email;
+    public String password;
+    public Forgot() {
     }
-    public SignIn(String email, String password) {
+    public Forgot(String email, String password) {
         this.email = email;
         this.password = password;
     }

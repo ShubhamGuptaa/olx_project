@@ -1,4 +1,4 @@
-package com.atcs.olx.ServiceImple;
+package com.atcs.olx.ServiceImple.AuthImplements;
 
 
 import java.util.List;
@@ -9,11 +9,11 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.atcs.olx.Entity.Admin_Register;
-import com.atcs.olx.Entity.Register;
-import com.atcs.olx.Repository.AdminRegisterRepo;
-import com.atcs.olx.Repository.RegisterRepo;
-import com.atcs.olx.Service.ServiceAuthenticate;
+import com.atcs.olx.Entity.Authenticate.Admin_Register;
+import com.atcs.olx.Entity.Authenticate.Register;
+import com.atcs.olx.Repository.AuthenticateRepo.AdminRegisterRepo;
+import com.atcs.olx.Repository.AuthenticateRepo.RegisterRepo;
+import com.atcs.olx.Service.ServiceAuthenticate.ServiceAuthenticate;
 
 
 

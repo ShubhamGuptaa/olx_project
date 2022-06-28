@@ -1,4 +1,6 @@
-package com.atcs.olx.Entity;
+package com.atcs.olx.Entity.Authenticate;
+
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,12 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import java.time.LocalDateTime; 
-
-
 @Entity
-@Table(name = "users")
-public class Register {
+@Table(name = "admin_users")
+public class Admin_Register {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,11 +37,11 @@ public class Register {
     @Column(nullable = false)
     private boolean isUserLoggedIn = false;
 
-    public Register() {
+    public Admin_Register() {
     }
 
-    public Register(Long id, String email, String password, String firstname, String lastname, String phone_number,
-            LocalDateTime created_date, boolean isUserLoggedIn) {
+    public Admin_Register(Long id, String email, String password, String firstname, String lastname,
+            String phone_number, LocalDateTime created_date, boolean isUserLoggedIn) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -116,6 +115,4 @@ public class Register {
     public void setUserLoggedIn(boolean isUserLoggedIn) {
         this.isUserLoggedIn = isUserLoggedIn;
     }
-    
-    
 }

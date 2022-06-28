@@ -1,4 +1,4 @@
-package com.atcs.olx.Entity;
+package com.atcs.olx.Entity.Authenticate;
 
 public class LogOut {
     private String email;
