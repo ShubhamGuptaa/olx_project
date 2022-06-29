@@ -9,7 +9,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.atcs.olx.Entity.Products.Product;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "register")
 public class Register {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,11 +44,11 @@ public class Register {
     @Column(nullable = false)
     private boolean isUserLoggedIn = false;
 
-    public Register() {
-    }
+    @OneToMany(mappedBy = "register")
+    private List<Product> product;
 
     public Register(Long id, String email, String password, String firstname, String lastname, String phone_number,
-            LocalDateTime created_date, boolean isUserLoggedIn) {
+            LocalDateTime created_date, boolean isUserLoggedIn, List<Product> product) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -57,7 +57,15 @@ public class Register {
         this.phone_number = phone_number;
         this.created_date = created_date;
         this.isUserLoggedIn = isUserLoggedIn;
+        this.product = product;
     }
+
+
+
+    public Register() {
+    }
+
+   
 
     public Long getId() {
         return id;
@@ -122,16 +130,13 @@ public class Register {
     public void setUserLoggedIn(boolean isUserLoggedIn) {
         this.isUserLoggedIn = isUserLoggedIn;
     }
-    
-   
-    @OneToMany(mappedBy = "user")
-    private List<Product> product;
+
 
     @JsonManagedReference
     public List<Product> getProduct() {
         return product;
     }
-    @JsonIgnore
+    
     public void setProduct(List<Product> product) {
         this.product = product;
     }

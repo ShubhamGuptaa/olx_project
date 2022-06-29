@@ -3,6 +3,7 @@ package com.atcs.olx.Entity.Products;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -35,7 +37,7 @@ public class Product {
 	@Column(nullable = false)
     private BigDecimal prod_price;
 	
-	@OneToOne(fetch=FetchType.LAZY, mappedBy="product")
+	@OneToOne
 	private Location location;
 	
 	@Enumerated(EnumType.STRING)
@@ -46,18 +48,27 @@ public class Product {
 	private String description;
 	
     @Column(nullable = false)
-    private LocalDateTime created_date = LocalDateTime.now();
+    private LocalDateTime date = LocalDateTime.now();
     
     @Column(nullable = false)
 	private boolean bookmark=false;
     
-    @OneToOne(fetch=FetchType.LAZY, mappedBy="product")
+    @OneToOne(fetch=FetchType.LAZY, mappedBy="product",cascade = CascadeType.ALL)
     private Contact contact;
 	
-    
-    @ManyToOne
     @JsonBackReference
-    private Register user;
+    @ManyToOne
+    private Register register;
+
+
+    public Register getRegister() {
+        return register;
+    }
+
+
+    public void setRegister(Register register) {
+        this.register = register;
+    }
 
 
     public Product() {
@@ -65,19 +76,18 @@ public class Product {
 
 
     public Product(Long id, String prod_name, BigDecimal prod_price, Location location, Category category,
-            String description, LocalDateTime created_date, boolean bookmark, Contact contact, Register user) {
+            String description, LocalDateTime date, boolean bookmark, Contact contact, Register register) {
         this.id = id;
         this.prod_name = prod_name;
         this.prod_price = prod_price;
         this.location = location;
         this.category = category;
         this.description = description;
-        this.created_date = created_date;
+        this.date = date;
         this.bookmark = bookmark;
         this.contact = contact;
-        this.user = user;
+        this.register = register;
     }
-
 
     public Long getId() {
         return id;
@@ -140,12 +150,12 @@ public class Product {
 
 
     public LocalDateTime getCreated_date() {
-        return created_date;
+        return date;
     }
 
 
-    public void setCreated_date(LocalDateTime created_date) {
-        this.created_date = created_date;
+    public void setCreated_date(LocalDateTime date) {
+        this.date = date;
     }
 
 
@@ -169,14 +179,7 @@ public class Product {
     }
 
 
-    public Register getUser() {
-        return user;
-    }
-
-
-    public void setUser(Register user) {
-        this.user = user;
-    }
+    
 
     
 }
