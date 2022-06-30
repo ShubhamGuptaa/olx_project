@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +40,9 @@ public class Authenticate {
     String email_regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"; 
     Pattern email = Pattern.compile(email_regex); 
     String msg = "";
-    public static String firstname,lastname,emailId,phone_number;
+    public static boolean checkUser = false;
+    public static boolean checkAdmin = false;
+    
 
     // Register New User
     @PostMapping("/register")
@@ -64,7 +68,6 @@ public class Authenticate {
             .toString());
 
             serviceUsers.registerUsers(register);
-            serviceUsers.setUserLoggedIn(register);
             msg = "Registration Successfull!";
             return  new ResponseEntity<String>(msg,HttpStatus.OK);
         }   
@@ -124,12 +127,7 @@ public class Authenticate {
                    .hashString(signIn.getPassword(), StandardCharsets.UTF_8)
                    .toString())){
                     serviceUsers.setUserLoggedIn(getUser);
-                    // //////////////////////
-                    firstname = getUser.getFirstname();
-                    lastname = getUser.getLastname();
-                    emailId = getUser.getEmail();
-                    phone_number = getUser.getPhone_number();
-                    // //////////////////////
+                    checkUser =  serviceUsers.checkUsers(getUser.getEmail());
                     msg = "Login Successfull!!";
                     return new ResponseEntity<String>(msg,HttpStatus.OK);
                    }else{
@@ -194,7 +192,6 @@ public class Authenticate {
             .toString());
 
             serviceUsers.registerAdmin(admin_register);
-            serviceUsers.setAdminLoggedIn(admin_register);
             msg = "Admin Registration Successfull!";
             return  new ResponseEntity<String>(msg,HttpStatus.OK);
         }   
@@ -223,6 +220,7 @@ public class Authenticate {
                    .toString())){
                     serviceUsers.setAdminLoggedIn(getAdmin);
                     msg = "Admin Login Successfull!!";
+                    checkAdmin =  serviceUsers.checkAdmin(getAdmin.getEmail());
                     return new ResponseEntity<String>(msg,HttpStatus.OK);
                    }else{
                     msg = "Incorrect admin Password!";
@@ -293,15 +291,110 @@ public class Authenticate {
         return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
     }
 
+    
     @GetMapping("/admin/active_users")
     public ResponseEntity<List<ActiveUsers>> getActiveUsers(){
-        if(serviceUsers.activeUsers() != null){
-            return new ResponseEntity<List<ActiveUsers>>(serviceUsers.activeUsers(),HttpStatus.OK);
+        if (checkAdmin == true){
+           
+            if(serviceUsers.activeUsers() != null){
+                return new ResponseEntity<List<ActiveUsers>>(serviceUsers.activeUsers(),HttpStatus.OK);
+            }
+            else{
+                msg = "No Active Users Right Now!";
+                System.out.println(msg);
+            }
+        }else{
+            System.out.println("You are not an Admin!");
         }
-        msg = "No Active Users Right Now!";
         return new ResponseEntity<List<ActiveUsers>>(HttpStatus.BAD_GATEWAY);
     }
+
+
+    @GetMapping("/admin/get_all_users")
+    public ResponseEntity<List<Register>> getAllUsers(){
+        if (checkAdmin == true){
+           
+            if(serviceUsers.getAllUsers() != null){
+                return new ResponseEntity<List<Register>>(serviceUsers.getAllUsers(),HttpStatus.OK);
+            }
+            else{
+                msg = "No Registered User Right Now!";
+                System.out.println(msg);
+            }
+        }else{
+            System.out.println("You are not an Admin!");
+        }
+        return new ResponseEntity<List<Register>>(HttpStatus.BAD_GATEWAY);
+    }
+
+
+    @PutMapping("/admin/update_user_details/{id}")
+    public ResponseEntity<String> updateUserdetails(@PathVariable("id") long id,@RequestBody Register register){
+        List<Register> allUsers = serviceUsers.getAllUsers();
+        Long ids = id;
+        if(checkAdmin == true){
+            for(Register a: allUsers){
+                if(a.getId().equals(ids)){
+                    serviceUsers.updateUser(id,register);
+                    msg = "Update details successfull!";
+                    return  new ResponseEntity<String>(msg,HttpStatus.OK);
+                }
+            }
+            msg = "User not Found with this user Id!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+
+        }
+        msg = "You are not an admin!";
+        return new ResponseEntity<String>(msg,HttpStatus.BAD_REQUEST);
+    }
     
+
+    @DeleteMapping("/admin/remove_user/{id}")
+    public ResponseEntity<String> removeUserById(@PathVariable("id") long id){
+        if(checkAdmin == true){
+            Register user = serviceUsers.getUserById(id);
+            if(user != null){
+                serviceUsers.removeUserbyId(id);
+                msg = "User removed Successfully!";
+                return new ResponseEntity<String>(msg,HttpStatus.OK);
+            }
+            else{
+                msg = "Invalid user Id!";
+                return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+            }
+        } else{
+            msg = "You are not an admin!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+
+    }
+
+    @DeleteMapping("/admin/delete_product_by_user/{id}")
+    public ResponseEntity<String> removeProductByUser(@PathVariable("id") Long id){
+        if(checkAdmin == true){
+            Register user = null;
+            try{
+                user = serviceUsers.getUserById(id);
+                if(user != null){
+               
+                    msg = serviceUsers.removeProductByUser(id);
+                    return new ResponseEntity<String>(msg,HttpStatus.OK);
+                }
+                else{
+                    msg = "Invalid user Id!";
+                    return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+                }
+            }
+            catch(Exception e){
+                msg = "Invalid user Id!";
+                return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+            }
+           
+        } else{
+            msg = "You are not an admin!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+        }
+    }
 }
 
 

@@ -86,10 +86,33 @@ public class UsersProduct {
 
     @DeleteMapping("/delete_product_by_id/{id}")
     public  ResponseEntity<String> deleteProductById(@PathVariable("id") long id){
+
         msg = "Product Deleted Successfully!";
         return new ResponseEntity<String>(msg,HttpStatus.OK) ;
 
     }
 
+    @DeleteMapping("/user/delete_product/{id}")
+    public ResponseEntity<String> deleteProdByUser(@PathVariable("id") long id, @RequestBody ListProductByEmail email){
+        List<Register> users = serviceUsers.getAllUsers();
+        for(Register r: users){
+            if(r.getEmail().equals(email.getEmail())){
+                List<Product> prod = userProductService.listProductByUser(r);
+               for(Product p:prod){
+                    if(p.getId().equals(id)){
+                        userProductService.deleteProductById(id);
+                        msg = "Product deleted successfully!";
+                        return new ResponseEntity<String>(msg,HttpStatus.OK) ;
+                    }
+               }
+                msg = "Invalid Product Id!";
+                return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+            }
+
+                }
+            
+            msg = "Invalid User!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY) ;
+    }
 
 }

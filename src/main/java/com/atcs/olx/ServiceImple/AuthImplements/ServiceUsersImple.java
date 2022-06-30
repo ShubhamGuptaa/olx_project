@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 import com.atcs.olx.Entity.Authenticate.ActiveUsers;
 import com.atcs.olx.Entity.Authenticate.Admin_Register;
 import com.atcs.olx.Entity.Authenticate.Register;
+import com.atcs.olx.Entity.Products.Product;
 import com.atcs.olx.Repository.AuthenticateRepo.AdminRegisterRepo;
 import com.atcs.olx.Repository.AuthenticateRepo.RegisterRepo;
+import com.atcs.olx.Repository.ProductRepo.ProductRepo;
 import com.atcs.olx.Service.ServiceAuthenticate.ServiceAuthenticate;
 
 @Component
@@ -23,6 +25,9 @@ public class ServiceUsersImple implements ServiceAuthenticate {
 
     @Autowired
     AdminRegisterRepo adminRegisterRepo;
+
+    @Autowired
+    ProductRepo productRepo;
 
     @Override
     public String registerUsers(Register register) {
@@ -125,4 +130,88 @@ public class ServiceUsersImple implements ServiceAuthenticate {
         return activeList;
     }
 
+    @Override
+    public boolean checkUsers(String email){
+        List<Register> allUsers = registerRepo.findAll();
+        for(Register a: allUsers){
+            if(email.equals(a.getEmail())){
+                if(a.isUserLoggedIn() == true){
+                    return true;
+                }
+            }
+        }
+        return false;
+       
+    }
+
+    @Override
+    public boolean checkAdmin(String email){
+        List<Admin_Register> allAdmin = adminRegisterRepo.findAll();
+        for(Admin_Register a: allAdmin){
+            System.out.println(a.isUserLoggedIn());
+            if(email.equals(a.getEmail())){
+                if(a.isUserLoggedIn() == true){
+                   
+                    return true;
+                }
+                else{
+                    return false; 
+                }
+            }
+        }
+        return false; 
+    }
+
+    @Override
+    public Register updateUser(Long id, Register register){
+        Register oldDetails = registerRepo.findById(id).get();
+        if(register.getFirstname() == null ){
+            register.setFirstname(oldDetails.getFirstname());
+        }
+        if(register.getLastname() == null){
+            register.setLastname(oldDetails.getLastname());
+        }
+        if(register.getEmail() == null){
+            register.setEmail(oldDetails.getEmail());
+        }
+        if(register.getPhone_number() == null){
+            register.setPhone_number(oldDetails.getPhone_number());
+        }
+        if(register.getId() == null){
+            register.setId(oldDetails.getId());
+        }
+        if(register.getPassword() == null){
+            register.setPassword(oldDetails.getPassword());
+        }
+        if(register.getProduct() == null){
+            register.setProduct( oldDetails.getProduct());
+        }
+        if(register.isUserLoggedIn() == false || register.isUserLoggedIn() == true){
+            register.setUserLoggedIn(oldDetails.isUserLoggedIn());
+        }
+        if(register.getCreated_date() != null || register.getCreated_date() == null){
+            register.setCreated_date(oldDetails.getCreated_date());
+        }
+        return registerRepo.save(register); 
+    }
+
+    @Override
+    public void removeUserbyId(Long id){
+        registerRepo.deleteById(id);
+    }
+
+    @Override
+   public String removeProductByUser(Long id){
+       Register user = registerRepo.findById(id).get();
+       List<Product> prod =  user.getProduct();
+       if(prod.isEmpty()){
+            return "No product listed with this user!";
+       }else{
+            for(Product p: prod){
+                productRepo.deleteById(p.getId());
+       }
+       return "Product removed Successfully!";
+       }
+      
+    }
 }

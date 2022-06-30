@@ -14,4 +14,5 @@ public interface UserProductService {
     public List<Product> listProductByUser(Register register);
     public Contact getContactDetails(Product prod);
     public List<Product> getAllProducts();
+    public void deleteProductById(Long id);
 }

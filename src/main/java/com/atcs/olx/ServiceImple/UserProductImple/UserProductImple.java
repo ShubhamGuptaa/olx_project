@@ -52,6 +52,9 @@ public class UserProductImple implements UserProductService{
        return productRepo.findAll();
     }
 
-    
+    @Override
+    public void deleteProductById(Long id){
+        productRepo.deleteById(id);
+    }
     
 }

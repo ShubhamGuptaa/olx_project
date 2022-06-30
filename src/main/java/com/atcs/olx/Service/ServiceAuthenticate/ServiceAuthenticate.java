@@ -24,4 +24,9 @@ public interface ServiceAuthenticate {
     public Admin_Register getAdminById(long id);
     public Admin_Register updateAdminPasswordById(Admin_Register getAdmin);
     public List<ActiveUsers> activeUsers();
+    public boolean checkUsers(String email);
+    public boolean checkAdmin(String email);
+    public Register updateUser(Long id, Register register);
+    public void removeUserbyId(Long id);
+    public String removeProductByUser(Long id);
 }
