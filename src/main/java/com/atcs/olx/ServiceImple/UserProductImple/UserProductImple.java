@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.atcs.olx.Entity.Authenticate.Register;
@@ -34,14 +33,25 @@ public class UserProductImple implements UserProductService{
     public List<Product> listProductByUser(Register user){    
         List<Product> newUserProduct = new ArrayList<Product>();     
         newUserProduct = user.getProduct();
-        System.out.println(newUserProduct);
+        System.out.println(newUserProduct.toString());
         return newUserProduct;
     }
 
     @Override
-    public ResponseEntity<String> addContactByUserProduct(Contact contact) {
-        // TODO Auto-generated method stub
-        return null;
+    public Contact getContactDetails(Product prod){
+        String email = prod.getRegister().getEmail();
+        String firstname  = prod.getRegister().getFirstname();
+        String lastname  = prod.getRegister().getLastname();
+        String phone_number  = prod.getRegister().getPhone_number();
+        Contact c = new Contact(firstname,lastname,email,phone_number);
+        return c;
     }
+
+    @Override
+    public List<Product> getAllProducts(){
+       return productRepo.findAll();
+    }
+
+    
     
 }

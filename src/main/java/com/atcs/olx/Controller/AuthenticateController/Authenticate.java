@@ -8,12 +8,14 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.atcs.olx.Entity.Authenticate.ActiveUsers;
 import com.atcs.olx.Entity.Authenticate.Admin_Register;
 import com.atcs.olx.Entity.Authenticate.Forgot;
 import com.atcs.olx.Entity.Authenticate.LogOut;
@@ -36,6 +38,7 @@ public class Authenticate {
     String email_regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"; 
     Pattern email = Pattern.compile(email_regex); 
     String msg = "";
+    public static String firstname,lastname,emailId,phone_number;
 
     // Register New User
     @PostMapping("/register")
@@ -121,6 +124,12 @@ public class Authenticate {
                    .hashString(signIn.getPassword(), StandardCharsets.UTF_8)
                    .toString())){
                     serviceUsers.setUserLoggedIn(getUser);
+                    // //////////////////////
+                    firstname = getUser.getFirstname();
+                    lastname = getUser.getLastname();
+                    emailId = getUser.getEmail();
+                    phone_number = getUser.getPhone_number();
+                    // //////////////////////
                     msg = "Login Successfull!!";
                     return new ResponseEntity<String>(msg,HttpStatus.OK);
                    }else{
@@ -284,7 +293,15 @@ public class Authenticate {
         return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
     }
 
-
+    @GetMapping("/admin/active_users")
+    public ResponseEntity<List<ActiveUsers>> getActiveUsers(){
+        if(serviceUsers.activeUsers() != null){
+            return new ResponseEntity<List<ActiveUsers>>(serviceUsers.activeUsers(),HttpStatus.OK);
+        }
+        msg = "No Active Users Right Now!";
+        return new ResponseEntity<List<ActiveUsers>>(HttpStatus.BAD_GATEWAY);
+    }
+    
 }
 
 

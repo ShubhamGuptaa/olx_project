@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.atcs.olx.Entity.Authenticate.ActiveUsers;
 import com.atcs.olx.Entity.Authenticate.Admin_Register;
 import com.atcs.olx.Entity.Authenticate.Register;
 
@@ -22,6 +23,5 @@ public interface ServiceAuthenticate {
     public List<Admin_Register> getAllAdmin();
     public Admin_Register getAdminById(long id);
     public Admin_Register updateAdminPasswordById(Admin_Register getAdmin);
-    
-    
+    public List<ActiveUsers> activeUsers();
 }

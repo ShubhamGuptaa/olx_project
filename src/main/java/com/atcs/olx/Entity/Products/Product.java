@@ -8,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,7 +36,7 @@ public class Product {
 	@Column(nullable = false)
     private BigDecimal prod_price;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Location location;
 	
 	@Enumerated(EnumType.STRING)
@@ -52,9 +51,6 @@ public class Product {
     
     @Column(nullable = false)
 	private boolean bookmark=false;
-    
-    @OneToOne(fetch=FetchType.LAZY, mappedBy="product",cascade = CascadeType.ALL)
-    private Contact contact;
 	
     @JsonBackReference
     @ManyToOne
@@ -76,7 +72,7 @@ public class Product {
 
 
     public Product(Long id, String prod_name, BigDecimal prod_price, Location location, Category category,
-            String description, LocalDateTime date, boolean bookmark, Contact contact, Register register) {
+            String description, LocalDateTime date, boolean bookmark, Register register) {
         this.id = id;
         this.prod_name = prod_name;
         this.prod_price = prod_price;
@@ -85,7 +81,6 @@ public class Product {
         this.description = description;
         this.date = date;
         this.bookmark = bookmark;
-        this.contact = contact;
         this.register = register;
     }
 
@@ -167,19 +162,5 @@ public class Product {
     public void setBookmark(boolean bookmark) {
         this.bookmark = bookmark;
     }
-
-
-    public Contact getContact() {
-        return contact;
-    }
-
-
-    public void setContact(Contact contact) {
-        this.contact = contact;
-    }
-
-
-    
-
     
 }

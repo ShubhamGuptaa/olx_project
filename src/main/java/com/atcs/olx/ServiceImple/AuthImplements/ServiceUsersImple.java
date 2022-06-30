@@ -1,24 +1,22 @@
 package com.atcs.olx.ServiceImple.AuthImplements;
 
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.atcs.olx.Entity.Authenticate.ActiveUsers;
 import com.atcs.olx.Entity.Authenticate.Admin_Register;
 import com.atcs.olx.Entity.Authenticate.Register;
 import com.atcs.olx.Repository.AuthenticateRepo.AdminRegisterRepo;
 import com.atcs.olx.Repository.AuthenticateRepo.RegisterRepo;
 import com.atcs.olx.Service.ServiceAuthenticate.ServiceAuthenticate;
 
-
-
 @Component
-public class ServiceUsersImple implements ServiceAuthenticate{
+public class ServiceUsersImple implements ServiceAuthenticate {
 
     @Autowired
     RegisterRepo registerRepo;
@@ -26,21 +24,17 @@ public class ServiceUsersImple implements ServiceAuthenticate{
     @Autowired
     AdminRegisterRepo adminRegisterRepo;
 
-
     @Override
     public String registerUsers(Register register) {
-      registerRepo.save(register);
-      return "Registration Successfull!";
+        registerRepo.save(register);
+        return "Registration Successfull!";
     }
-    
 
-    public  boolean
-    isValidPassword(String password)
-    {
+    public boolean isValidPassword(String password) {
         String regex_pass = "^(?=.*[0-9])"
-        + "(?=.*[a-z])(?=.*[A-Z])"
-        + "(?=.*[@#$%^&+=])"
-        + "(?=\\S+$).{8,20}$";
+                + "(?=.*[a-z])(?=.*[A-Z])"
+                + "(?=.*[@#$%^&+=])"
+                + "(?=\\S+$).{8,20}$";
 
         Pattern p = Pattern.compile(regex_pass);
 
@@ -51,22 +45,20 @@ public class ServiceUsersImple implements ServiceAuthenticate{
         return m.matches();
     }
 
-
     @Override
     public List<Register> getAllUsers() {
-        return  registerRepo.findAll();
+        return registerRepo.findAll();
     }
-    
+
     @Override
-    public Register getUserById(long id){
+    public Register getUserById(long id) {
         return registerRepo.findById(id).get();
     }
 
     @Override
-    public Register updateUserPasswordById(Register register){
+    public Register updateUserPasswordById(Register register) {
         return registerRepo.save(register);
     }
-
 
     @Override
     public boolean setUserLoggedIn(Register register) {
@@ -74,6 +66,7 @@ public class ServiceUsersImple implements ServiceAuthenticate{
         registerRepo.save(register);
         return true;
     }
+
     @Override
     public boolean setUserLoggedOut(Register register) {
         register.setUserLoggedIn(false);
@@ -81,13 +74,11 @@ public class ServiceUsersImple implements ServiceAuthenticate{
         return false;
     }
 
-
     @Override
     public String registerAdmin(Admin_Register admin_register) {
         adminRegisterRepo.save(admin_register);
         return "Admin Registration Successfull!";
     }
-
 
     @Override
     public boolean setAdminLoggedIn(Admin_Register admin_register) {
@@ -105,18 +96,33 @@ public class ServiceUsersImple implements ServiceAuthenticate{
 
     @Override
     public List<Admin_Register> getAllAdmin() {
-        return  adminRegisterRepo.findAll();
+        return adminRegisterRepo.findAll();
     }
-    
+
     @Override
-    public Admin_Register getAdminById(long id){
+    public Admin_Register getAdminById(long id) {
         return adminRegisterRepo.findById(id).get();
     }
 
     @Override
-    public Admin_Register updateAdminPasswordById(Admin_Register admin_register){
+    public Admin_Register updateAdminPasswordById(Admin_Register admin_register) {
         return adminRegisterRepo.save(admin_register);
     }
 
+    @Override
+    public List<ActiveUsers> activeUsers() {
+        List<Register> allUsers = registerRepo.findAll();
+        List<ActiveUsers> activeList = new ArrayList<ActiveUsers>();
+
+        for (Register a : allUsers) {
+            if (a.isUserLoggedIn() == true) {
+                String name = a.getFirstname() + " " + a.getLastname();
+                String email = a.getEmail();
+                ActiveUsers act = new ActiveUsers(name, email);
+                activeList.add(act);
+            }
+        }
+        return activeList;
+    }
 
 }

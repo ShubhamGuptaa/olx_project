@@ -3,7 +3,6 @@ package com.atcs.olx.Entity.Products;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +32,7 @@ public class Location {
 	private int pincode;
 	
 	
-	@OneToOne(fetch=FetchType.LAZY, mappedBy="location",cascade = CascadeType.ALL)
+	@OneToOne(mappedBy="location",cascade = CascadeType.ALL)
 	Product product;
 
 	public Location() {
