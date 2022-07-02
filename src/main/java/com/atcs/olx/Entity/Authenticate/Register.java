@@ -1,15 +1,18 @@
 package com.atcs.olx.Entity.Authenticate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.atcs.olx.Entity.Products.Cart;
 import com.atcs.olx.Entity.Products.Product;
-
+import com.atcs.olx.Entity.Products.SoldProducts;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDateTime;
@@ -47,8 +50,14 @@ public class Register {
     @OneToMany(mappedBy = "register")
     private List<Product> product;
 
+    @OneToMany(mappedBy = "register")
+    private List<SoldProducts> soldProduct;
+
+    @OneToOne(mappedBy = "register",cascade = CascadeType.ALL)
+    private Cart cart;
+
     public Register(Long id, String email, String password, String firstname, String lastname, String phone_number,
-            LocalDateTime created_date, boolean isUserLoggedIn, List<Product> product) {
+            LocalDateTime created_date, boolean isUserLoggedIn, List<Product> product, Cart cart) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -58,6 +67,19 @@ public class Register {
         this.created_date = created_date;
         this.isUserLoggedIn = isUserLoggedIn;
         this.product = product;
+        this.cart = cart;
+    }
+
+
+
+    public Cart getCart() {
+        return cart;
+    }
+
+
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
 

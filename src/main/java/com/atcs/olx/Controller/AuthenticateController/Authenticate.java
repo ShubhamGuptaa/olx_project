@@ -23,7 +23,10 @@ import com.atcs.olx.Entity.Authenticate.Forgot;
 import com.atcs.olx.Entity.Authenticate.LogOut;
 import com.atcs.olx.Entity.Authenticate.Register;
 import com.atcs.olx.Entity.Authenticate.SignIn;
+import com.atcs.olx.Entity.Products.ListProductByEmail;
+import com.atcs.olx.Entity.Products.Product;
 import com.atcs.olx.Service.ServiceAuthenticate.ServiceAuthenticate;
+import com.atcs.olx.Service.UsersProductService.UserProductService;
 import com.google.common.hash.Hashing;
 
 // To do
@@ -36,6 +39,9 @@ public class Authenticate {
 
     @Autowired
     ServiceAuthenticate serviceUsers;
+
+    @Autowired
+    UserProductService userProductService;
    
     String email_regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"; 
     Pattern email = Pattern.compile(email_regex); 
@@ -394,6 +400,26 @@ public class Authenticate {
             msg = "You are not an admin!";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
+    }
+
+
+    @GetMapping("admin/list_product_by_user")
+    public ResponseEntity<List<Product>> adminListProductByUser(@RequestBody ListProductByEmail listProductByEmail){
+        if(checkAdmin == true){
+            List<Register> allUsers = serviceUsers.getAllUsers();
+            for(Register a: allUsers){
+                if(a.getEmail().equals(listProductByEmail.getEmail())){  
+                    return new ResponseEntity<List<Product>>(userProductService.listProductByUser(a),HttpStatus.OK);
+                } 
+            }
+            msg = " email not found!";
+           return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        }else{
+            System.out.println("You are not an admin!");
+            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        }
+       
+
     }
 }
 

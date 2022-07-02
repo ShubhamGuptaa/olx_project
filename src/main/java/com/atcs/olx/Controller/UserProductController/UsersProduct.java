@@ -10,11 +10,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.atcs.olx.Controller.AuthenticateController.Authenticate;
 import com.atcs.olx.Entity.Authenticate.Register;
 import com.atcs.olx.Entity.Products.Contact;
 import com.atcs.olx.Entity.Products.ListProductByEmail;
 import com.atcs.olx.Entity.Products.Product;
+import com.atcs.olx.Entity.Products.SoldProducts;
+import com.atcs.olx.Service.CartService.CartService;
 import com.atcs.olx.Service.ServiceAuthenticate.ServiceAuthenticate;
 import com.atcs.olx.Service.UsersProductService.UserProductService;
 
@@ -27,38 +32,49 @@ public class UsersProduct {
     @Autowired
     UserProductService userProductService;
 
-   
+    @Autowired
+    CartService cartService;
 
     String msg = "";
 
     @PostMapping("/user/add_product")
-    public ResponseEntity<String> addProductByUser(@RequestBody Product product){
-        userProductService.addProduct(product);
-       
-        msg = "Product added successfully!";
-        return new ResponseEntity<String>(msg,HttpStatus.OK);
+    public ResponseEntity<String> addProductByUser(@RequestBody Product product) {
+        try {
+            if (Authenticate.checkUser == true) {
+                userProductService.addProduct(product);
+                msg = "Product added successfully!";
+                return new ResponseEntity<String>(msg, HttpStatus.OK);
+            } else {
+                msg = "Authentication error!! Please login";
+                return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
+            }
+
+        } catch (Exception e) {
+            msg = "Exception error!!";
+            return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
+        }
 
     }
 
     @GetMapping("/user/list_product")
-    public ResponseEntity<List<Product>> listProductByUser(@RequestBody ListProductByEmail listProductByEmail){
+    public ResponseEntity<List<Product>> listProductByUser(@RequestBody ListProductByEmail listProductByEmail) {
         List<Register> allUsers = serviceUsers.getAllUsers();
-        for(Register a: allUsers){
-            if(a.getEmail().equals(listProductByEmail.getEmail())){  
-                return new ResponseEntity<List<Product>>(userProductService.listProductByUser(a),HttpStatus.OK);
-            } 
+        for (Register a : allUsers) {
+            if (a.getEmail().equals(listProductByEmail.getEmail())) {
+                return new ResponseEntity<List<Product>>(userProductService.listProductByUser(a), HttpStatus.OK);
+            }
         }
         msg = " email not found!";
-       return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
 
     }
 
     @GetMapping("/user/get/contact_details_of_any_product/{id}")
-    public ResponseEntity<Contact> contactDetails(@PathVariable("id") long id){
+    public ResponseEntity<Contact> contactDetails(@PathVariable("id") long id) {
         List<Product> products = userProductService.getAllProducts();
-        for(Product a: products){
-            if(a.getId().equals(id)){
-               return new ResponseEntity<Contact>(userProductService.getContactDetails(a),HttpStatus.OK);
+        for (Product a : products) {
+            if (a.getId().equals(id)) {
+                return new ResponseEntity<Contact>(userProductService.getContactDetails(a), HttpStatus.OK);
 
             }
         }
@@ -67,52 +83,150 @@ public class UsersProduct {
     }
 
     @GetMapping("/user/list_all_product")
-    public ResponseEntity<List<Product>> getAllProduct(){
-       List<Product> prod =  userProductService.getAllProducts();
-       if (prod != null){
-        return new ResponseEntity<List<Product>>(prod,HttpStatus.OK);
-       }
-       else{
-        msg = "No product available ";
-        return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
-       }
-    }
-
-    @PostMapping
-    public ResponseEntity<String> addContactByUserProduct(@RequestBody Contact contact){
-        msg = "Product added successfully!";
-        return new ResponseEntity<String>(msg,HttpStatus.OK);
+    public ResponseEntity<List<Product>> getAllProduct() {
+        List<Product> prod = userProductService.getAllProducts();
+        if (prod != null) {
+            return new ResponseEntity<List<Product>>(prod, HttpStatus.OK);
+        } else {
+            msg = "No product available ";
+            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        }
     }
 
     @DeleteMapping("/delete_product_by_id/{id}")
-    public  ResponseEntity<String> deleteProductById(@PathVariable("id") long id){
+    public ResponseEntity<String> deleteProductById(@PathVariable("id") long id) {
 
         msg = "Product Deleted Successfully!";
-        return new ResponseEntity<String>(msg,HttpStatus.OK) ;
+        return new ResponseEntity<String>(msg, HttpStatus.OK);
 
     }
 
     @DeleteMapping("/user/delete_product/{id}")
-    public ResponseEntity<String> deleteProdByUser(@PathVariable("id") long id, @RequestBody ListProductByEmail email){
+    public ResponseEntity<String> deleteProdByUser(@PathVariable("id") long id, @RequestBody ListProductByEmail email) {
         List<Register> users = serviceUsers.getAllUsers();
-        for(Register r: users){
-            if(r.getEmail().equals(email.getEmail())){
+        for (Register r : users) {
+            if (r.getEmail().equals(email.getEmail())) {
                 List<Product> prod = userProductService.listProductByUser(r);
-               for(Product p:prod){
-                    if(p.getId().equals(id)){
+                for (Product p : prod) {
+                    if (p.getId().equals(id)) {
                         userProductService.deleteProductById(id);
                         msg = "Product deleted successfully!";
-                        return new ResponseEntity<String>(msg,HttpStatus.OK) ;
+                        return new ResponseEntity<String>(msg, HttpStatus.OK);
                     }
-               }
+                }
                 msg = "Invalid Product Id!";
-                return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+                return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
             }
 
+        }
+        msg = "Invalid User!";
+        return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
+    }
+
+    @PostMapping("/user/add_product_to_bookmark/{id}")
+    public ResponseEntity<String> addProductToBookmark(@PathVariable("id") long prodId) {
+        try {
+            List<Register> users = serviceUsers.getAllUsers();
+            for (Register user : users) {
+                if (user.isUserLoggedIn() == true) {
+                    msg = cartService.setCart(user, prodId);
+                    return new ResponseEntity<String>(msg, HttpStatus.OK);
                 }
-            
-            msg = "Invalid User!";
-            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY) ;
+            }
+            msg = "Please logIn first!";
+            return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
+        } catch (Exception e) {
+            msg = "Already added to the cart!";
+            return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
+        }
+
+    }
+
+    @PostMapping("/user/buy_product/{id}")
+    public ResponseEntity<String> buyProduct(@PathVariable("id") long id) {
+        try {
+            if (Authenticate.checkUser == true) {
+                Product prod = userProductService.getProductById(id);
+                if (prod != null) {
+                    msg = userProductService.sellProductById(id);
+                    return new ResponseEntity<String>(msg, HttpStatus.OK);
+                } else {
+                    msg = "Product Id is not valid to buy!";
+                    return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
+                }
+            } else {
+                msg = "Please logIn first!";
+                return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
+            }
+        } catch (Exception e) {
+            msg = "Product Id is not valid!";
+            return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @GetMapping("/admin/list_of_expired_product")
+    public ResponseEntity<List<SoldProducts>> listOfExpiredItems() {
+        try {
+            if (Authenticate.checkAdmin == true) {
+                return new ResponseEntity<List<SoldProducts>>(userProductService.ExpiredProductList(), HttpStatus.OK);
+            } else {
+                System.out.println("Please login as an admin");
+                return new ResponseEntity<List<SoldProducts>>(HttpStatus.BAD_GATEWAY);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return new ResponseEntity<List<SoldProducts>>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @GetMapping("/user/search_product_byName")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam("name") String name) {
+        try {
+            return new ResponseEntity<List<Product>>(userProductService.searchProducts(name), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @GetMapping("/user/search_product_byPrice")
+    public ResponseEntity<List<Product>> searchProductsPrice(@RequestParam("price") String price) {
+        try {
+            return new ResponseEntity<List<Product>>(userProductService.searchProducts(price), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @GetMapping("/user/search_product_byLocation")
+    public ResponseEntity<List<Product>> searchProductsLocation(@RequestParam("location") String location) {
+        try {
+            return new ResponseEntity<List<Product>>(userProductService.searchProductsByLocation(location), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @GetMapping("/user/sort_productByPrice_low_to_high")
+    public ResponseEntity<List<Product>> sortProductByPrice_L_H() {
+        try {
+            return new ResponseEntity<List<Product>>(userProductService.sortBypriceLToH(),HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @GetMapping("/user/sort_productByPrice_high_to_low")
+    public ResponseEntity<List<Product>> sortProductByPrice_H_L() {
+        try {
+            return new ResponseEntity<List<Product>>(userProductService.sortBypriceHToL(),HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        }
     }
 
 }
