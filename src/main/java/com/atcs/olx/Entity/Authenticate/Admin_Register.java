@@ -1,13 +1,17 @@
 package com.atcs.olx.Entity.Authenticate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.atcs.olx.Entity.Messages.AllAdminMessages;
 
 
 @Entity
@@ -38,11 +42,15 @@ public class Admin_Register {
     @Column(nullable = false)
     private boolean isUserLoggedIn = false;
 
+    @OneToMany(mappedBy = "adminRegister")
+    private List<AllAdminMessages> allAdminMessages;
+
+
     public Admin_Register() {
     }
 
     public Admin_Register(Long id, String email, String password, String firstname, String lastname,
-            String phone_number, LocalDateTime created_date, boolean isUserLoggedIn) {
+            String phone_number, LocalDateTime created_date, boolean isUserLoggedIn, List<AllAdminMessages> allAdminMessages) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -51,6 +59,7 @@ public class Admin_Register {
         this.phone_number = phone_number;
         this.created_date = created_date;
         this.isUserLoggedIn = isUserLoggedIn;
+        this.allAdminMessages = allAdminMessages;
     }
 
     public Long getId() {
@@ -115,5 +124,13 @@ public class Admin_Register {
 
     public void setUserLoggedIn(boolean isUserLoggedIn) {
         this.isUserLoggedIn = isUserLoggedIn;
+    }
+
+    public List<AllAdminMessages> getAllAdminMessages() {
+        return allAdminMessages;
+    }
+
+    public void setAllAdminMessages(List<AllAdminMessages> allAdminMessages) {
+        this.allAdminMessages = allAdminMessages;
     }
 }

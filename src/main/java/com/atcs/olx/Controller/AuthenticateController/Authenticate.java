@@ -418,9 +418,8 @@ public class Authenticate {
             System.out.println("You are not an admin!");
             return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
         }
-       
-
     }
+    
 }
 
 

@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import com.atcs.olx.Entity.Messages.UsersTable;
 import com.atcs.olx.Entity.Products.Product;
 
 @Repository
@@ -25,9 +23,6 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
 
     @Query(value = "SELECT * from Product order by prod_price DESC ",nativeQuery = true)
     List<Product> sortProductsHToL();
-
-    @Query(value = "show tables",nativeQuery = true)
-    List<UsersTable> sortusers();
 
 
 }

@@ -10,6 +10,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.atcs.olx.Entity.Messages.AllMessages;
 import com.atcs.olx.Entity.Products.Cart;
 import com.atcs.olx.Entity.Products.Product;
 import com.atcs.olx.Entity.Products.SoldProducts;
@@ -53,11 +54,15 @@ public class Register {
     @OneToMany(mappedBy = "register")
     private List<SoldProducts> soldProduct;
 
+    @OneToMany(mappedBy = "register")
+    private List<AllMessages> allMessages;
+
+
     @OneToOne(mappedBy = "register",cascade = CascadeType.ALL)
     private Cart cart;
 
     public Register(Long id, String email, String password, String firstname, String lastname, String phone_number,
-            LocalDateTime created_date, boolean isUserLoggedIn, List<Product> product, Cart cart) {
+            LocalDateTime created_date, boolean isUserLoggedIn, List<Product> product, Cart cart, List<AllMessages> allMessages) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -68,6 +73,7 @@ public class Register {
         this.isUserLoggedIn = isUserLoggedIn;
         this.product = product;
         this.cart = cart;
+        this.allMessages = allMessages;
     }
 
 
@@ -161,6 +167,14 @@ public class Register {
     
     public void setProduct(List<Product> product) {
         this.product = product;
+    }
+
+    public List<AllMessages> getAllMessages() {
+        return allMessages;
+    }
+
+    public void setAllMessages(List<AllMessages> allMessages) {
+        this.allMessages = allMessages;
     }
     
 }

@@ -29,4 +29,5 @@ public interface ServiceAuthenticate {
     public Register updateUser(Long id, Register register);
     public void removeUserbyId(Long id);
     public String removeProductByUser(Long id);
+   
 }
