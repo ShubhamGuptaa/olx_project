@@ -33,6 +33,7 @@ public class UsersMessage {
 
     String msg = "";
 
+    // User can send message to another user using their email
     @PostMapping("/user/send_message_to" )
     public ResponseEntity<String> sendMessage(@RequestBody Message message){
         try{ 
@@ -42,15 +43,15 @@ public class UsersMessage {
                 for(Register r: usersList){
                     if(message.getEmail().equals(r.getEmail())){
                             for(Register cu : usersList){
+                            if(cu.isUserLoggedIn() == true){
                                 if(message.getEmail().equals(cu.getEmail())){
                                     msg = "You are not allowed to send message to yourSelf!";
                                     return new ResponseEntity<String>(msg,HttpStatus.OK);
                                 }
-                                if(cu.isUserLoggedIn() == true){
                                     current_user = cu;
                                     messageService.storeMessages(current_user,r.getId(),message.getMessage());
-                                msg = "Message Sent!";
-                                return new ResponseEntity<String>(msg,HttpStatus.OK);
+                                    msg = "Message Sent!";
+                                    return new ResponseEntity<String>(msg,HttpStatus.OK);
                                 }
                             }                            
                         }                       
@@ -67,6 +68,7 @@ public class UsersMessage {
         }
     }
 
+    // Admin can send message to any one using email 
     @PostMapping("/admin/send_message_to" )
     public ResponseEntity<String> sendAdminMessages(@RequestBody Message message){
         try{ 
@@ -80,12 +82,15 @@ public class UsersMessage {
                         if(message.getEmail().equals(r.getEmail()) || message.getEmail().equals(ar.getEmail()) ){
                             if(message.getEmail().equals(r.getEmail())){
                                 rDetails = r;
-    
                             }
                             if(message.getEmail().equals(ar.getEmail())){
                                 adDeails = ar;
                             }
                             if(ar.isUserLoggedIn() == true){
+                                if(message.getEmail().equals(ar.getEmail())){
+                                    msg = "You are not allowed to send message to yourSelf!";
+                                    return new ResponseEntity<String>(msg,HttpStatus.OK);
+                                }
                                 messageService.storeAdminMessages(ar, rDetails, adDeails , message.getMessage());
                                 // 1: Current loggedIn admin, 2. If User then U_Details, 3. If Admin then A_Details, 4. Messages.
                                 msg = "Message Sent!";
@@ -108,6 +113,7 @@ public class UsersMessage {
         }
     }
 
+    // User can get all the previous messages 
     @GetMapping("/user/get_all_messages")
     public ResponseEntity<List<String>> getAllUserMessages(){
         List<String> ms = new ArrayList<String>();
@@ -145,8 +151,8 @@ public class UsersMessage {
             return new ResponseEntity<List<String>>(HttpStatus.BAD_GATEWAY);
         }
     }
-    // ////////////////
-    
+
+    // Admin can list all the previous messages
     @GetMapping("/admin/get_all_messages")
     public ResponseEntity<List<String>> getAllAdminMessages(){
         List<String> ms = new ArrayList<String>();

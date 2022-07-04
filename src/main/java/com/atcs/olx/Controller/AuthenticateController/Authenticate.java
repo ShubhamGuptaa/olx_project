@@ -29,10 +29,6 @@ import com.atcs.olx.Service.ServiceAuthenticate.ServiceAuthenticate;
 import com.atcs.olx.Service.UsersProductService.UserProductService;
 import com.google.common.hash.Hashing;
 
-// To do
-// If email already exist then need to raise exception at the time of registration!
-/////////////////////////////////
-
 @RestController
 @RequestMapping("/olx")
 public class Authenticate {
@@ -69,6 +65,13 @@ public class Authenticate {
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
         else{
+            List<Register> allUsers = serviceUsers.getAllUsers();
+            for(Register r: allUsers){
+                if(r.getEmail().equals(register.getEmail())){
+                    msg = "Email already exist!";
+                    return  new ResponseEntity<String>(msg,HttpStatus.OK);
+                }
+            }
             register.setPassword(Hashing.sha256()
             .hashString(register.getPassword(), StandardCharsets.UTF_8)
             .toString());
@@ -79,7 +82,7 @@ public class Authenticate {
         }   
     }
 
-    // If User Forgot their Password
+    // User Forgot their Password
     @PutMapping("/forgot_password")
     public ResponseEntity<String> forgot_password(@RequestBody Forgot forgot){
         Matcher email_matcher = email.matcher(forgot.getEmail());
@@ -111,7 +114,7 @@ public class Authenticate {
      
     }
 
-    // If user login/SignIn
+    //  user login/SignIn
     @PostMapping("/signIn")
     public ResponseEntity<String> signIn_User(@RequestBody SignIn signIn){
         Matcher email_matcher = email.matcher(signIn.getEmail());
@@ -193,6 +196,13 @@ public class Authenticate {
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
         else{
+            List<Admin_Register> allAdmin = serviceUsers.getAllAdmin();
+            for(Admin_Register r: allAdmin){
+                if(r.getEmail().equals(admin_register.getEmail())){
+                    msg = "Email already exist!";
+                    return  new ResponseEntity<String>(msg,HttpStatus.OK);
+                }
+            }
             admin_register.setPassword(Hashing.sha256()
             .hashString(admin_register.getPassword(), StandardCharsets.UTF_8)
             .toString());
@@ -241,7 +251,7 @@ public class Authenticate {
         return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
     }
 
-    // If Admin Forgot their Password
+    // Admin Forgot Password
     @PutMapping("/admin/forgot_password")
     public ResponseEntity<String> forgot_Admin_Password(@RequestBody Forgot forgot){
         Matcher email_matcher = email.matcher(forgot.getEmail());
@@ -297,7 +307,7 @@ public class Authenticate {
         return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);  
     }
 
-    
+    // Get all Active users list
     @GetMapping("/admin/active_users")
     public ResponseEntity<List<ActiveUsers>> getActiveUsers(){
         if (checkAdmin == true){
@@ -316,6 +326,7 @@ public class Authenticate {
     }
 
 
+    // Admin can get all list of users
     @GetMapping("/admin/get_all_users")
     public ResponseEntity<List<Register>> getAllUsers(){
         if (checkAdmin == true){
@@ -333,7 +344,7 @@ public class Authenticate {
         return new ResponseEntity<List<Register>>(HttpStatus.BAD_GATEWAY);
     }
 
-
+    // Admin can update user details
     @PutMapping("/admin/update_user_details/{id}")
     public ResponseEntity<String> updateUserdetails(@PathVariable("id") long id,@RequestBody Register register){
         List<Register> allUsers = serviceUsers.getAllUsers();
@@ -355,6 +366,7 @@ public class Authenticate {
     }
     
 
+    // Admin can delete the user
     @DeleteMapping("/admin/remove_user/{id}")
     public ResponseEntity<String> removeUserById(@PathVariable("id") long id){
         if(checkAdmin == true){
@@ -375,6 +387,7 @@ public class Authenticate {
 
     }
 
+    // Admin can delete the listed product by the specific user
     @DeleteMapping("/admin/delete_product_by_user/{id}")
     public ResponseEntity<String> removeProductByUser(@PathVariable("id") Long id){
         if(checkAdmin == true){
@@ -403,6 +416,7 @@ public class Authenticate {
     }
 
 
+    // Admin can list all the product of the specific user
     @GetMapping("admin/list_product_by_user")
     public ResponseEntity<List<Product>> adminListProductByUser(@RequestBody ListProductByEmail listProductByEmail){
         if(checkAdmin == true){
@@ -419,7 +433,7 @@ public class Authenticate {
             return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
         }
     }
-    
+
 }
 
 

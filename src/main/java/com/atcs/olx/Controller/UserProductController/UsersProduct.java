@@ -37,6 +37,7 @@ public class UsersProduct {
 
     String msg = "";
 
+    // Add a product by user
     @PostMapping("/user/add_product")
     public ResponseEntity<String> addProductByUser(@RequestBody Product product) {
         try {
@@ -56,6 +57,7 @@ public class UsersProduct {
 
     }
 
+    // list product of a user
     @GetMapping("/user/list_product")
     public ResponseEntity<List<Product>> listProductByUser(@RequestBody ListProductByEmail listProductByEmail) {
         List<Register> allUsers = serviceUsers.getAllUsers();
@@ -65,10 +67,12 @@ public class UsersProduct {
             }
         }
         msg = " email not found!";
+        System.out.println(msg);
         return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
 
     }
 
+    // Get Contact details of any product
     @GetMapping("/user/get/contact_details_of_any_product/{id}")
     public ResponseEntity<Contact> contactDetails(@PathVariable("id") long id) {
         List<Product> products = userProductService.getAllProducts();
@@ -79,9 +83,11 @@ public class UsersProduct {
             }
         }
         msg = "Id is not associated with any product!";
+        System.out.println(msg);
         return new ResponseEntity<Contact>(HttpStatus.BAD_GATEWAY);
     }
 
+    // List all the products available
     @GetMapping("/user/list_all_product")
     public ResponseEntity<List<Product>> getAllProduct() {
         List<Product> prod = userProductService.getAllProducts();
@@ -89,18 +95,12 @@ public class UsersProduct {
             return new ResponseEntity<List<Product>>(prod, HttpStatus.OK);
         } else {
             msg = "No product available ";
+            System.out.println(msg);
             return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
         }
     }
 
-    @DeleteMapping("/delete_product_by_id/{id}")
-    public ResponseEntity<String> deleteProductById(@PathVariable("id") long id) {
-
-        msg = "Product Deleted Successfully!";
-        return new ResponseEntity<String>(msg, HttpStatus.OK);
-
-    }
-
+    // Delete a product by using product id
     @DeleteMapping("/user/delete_product/{id}")
     public ResponseEntity<String> deleteProdByUser(@PathVariable("id") long id, @RequestBody ListProductByEmail email) {
         List<Register> users = serviceUsers.getAllUsers();
@@ -123,6 +123,7 @@ public class UsersProduct {
         return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
     }
 
+    // Add a product to cart using product id
     @PostMapping("/user/add_product_to_bookmark/{id}")
     public ResponseEntity<String> addProductToBookmark(@PathVariable("id") long prodId) {
         try {
@@ -142,6 +143,7 @@ public class UsersProduct {
 
     }
 
+    // Buy any product using product id
     @PostMapping("/user/buy_product/{id}")
     public ResponseEntity<String> buyProduct(@PathVariable("id") long id) {
         try {
@@ -164,6 +166,7 @@ public class UsersProduct {
         }
     }
 
+    // Admin can list all the expired product
     @GetMapping("/admin/list_of_expired_product")
     public ResponseEntity<List<SoldProducts>> listOfExpiredItems() {
         try {
@@ -179,6 +182,7 @@ public class UsersProduct {
         }
     }
 
+    // User can search product by product name
     @GetMapping("/user/search_product_byName")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam("name") String name) {
         try {
@@ -189,6 +193,7 @@ public class UsersProduct {
         }
     }
 
+    // User can search product by product price
     @GetMapping("/user/search_product_byPrice")
     public ResponseEntity<List<Product>> searchProductsPrice(@RequestParam("price") String price) {
         try {
@@ -199,6 +204,7 @@ public class UsersProduct {
         }
     }
 
+    // User can search product by location
     @GetMapping("/user/search_product_byLocation")
     public ResponseEntity<List<Product>> searchProductsLocation(@RequestParam("location") String location) {
         try {
@@ -209,6 +215,7 @@ public class UsersProduct {
         }
     }
 
+    // Filter products on the basis of price (Low to High)
     @GetMapping("/user/sort_productByPrice_low_to_high")
     public ResponseEntity<List<Product>> sortProductByPrice_L_H() {
         try {
@@ -219,6 +226,7 @@ public class UsersProduct {
         }
     }
 
+    // Filter products on the basis of price (High to Low)
     @GetMapping("/user/sort_productByPrice_high_to_low")
     public ResponseEntity<List<Product>> sortProductByPrice_H_L() {
         try {

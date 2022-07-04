@@ -24,5 +24,4 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     @Query(value = "SELECT * from Product order by prod_price DESC ",nativeQuery = true)
     List<Product> sortProductsHToL();
 
-
 }

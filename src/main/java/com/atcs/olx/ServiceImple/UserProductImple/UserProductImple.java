@@ -120,11 +120,7 @@ public class UserProductImple implements UserProductService{
     public List<Product> sortBypriceHToL() {
         List<Product> products = productRepo.sortProductsHToL();
          return products;
-    }
-           
-    // Message Part start
-
-    
+    }  
     
 }
 
