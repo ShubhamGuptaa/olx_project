@@ -109,13 +109,13 @@ public class UsersMessage {
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }catch(Exception e){
             msg =  e.toString();
-            return new ResponseEntity<String>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 
     // User can get all the previous messages 
     @GetMapping("/user/get_all_messages")
-    public ResponseEntity<List<String>> getAllUserMessages(){
+    public ResponseEntity<?> getAllUserMessages(){
         List<String> ms = new ArrayList<String>();
         try{
             if(Authenticate.checkUser == true){
@@ -127,8 +127,8 @@ public class UsersMessage {
                     }
                 }
                 if(allMsgs == null){
-                    System.out.println("No message found!");
-                    return new ResponseEntity<List<String>>(HttpStatus.BAD_GATEWAY);
+                    msg = "No message found!";
+                    return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
                 }else{
                     List<Register> allRegister = serviceUsers.getAllUsers();
                     String msgByUser = null;
@@ -143,18 +143,17 @@ public class UsersMessage {
                 }
                 return new ResponseEntity<List<String>>(ms,HttpStatus.OK);
             }   
-            System.out.println("Please login first!");
-            return new ResponseEntity<List<String>>(HttpStatus.BAD_GATEWAY);
+            msg = "Please login first!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
             
         }catch(Exception e){
-            System.out.println(e.toString());
-            return new ResponseEntity<List<String>>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 
     // Admin can list all the previous messages
     @GetMapping("/admin/get_all_messages")
-    public ResponseEntity<List<String>> getAllAdminMessages(){
+    public ResponseEntity<?> getAllAdminMessages(){
         List<String> ms = new ArrayList<String>();
         try{
             if(Authenticate.checkAdmin == true){
@@ -166,8 +165,8 @@ public class UsersMessage {
                     }
                 }
                 if(allMsgs == null){
-                    System.out.println("No message found!");
-                    return new ResponseEntity<List<String>>(HttpStatus.BAD_GATEWAY);
+                    msg = "No message found!";
+                    return new ResponseEntity<String>(msg ,HttpStatus.BAD_GATEWAY);
                 }else{
                     String msgByUser = null;
                     for(AllAdminMessages a: allMsgs){
@@ -186,12 +185,11 @@ public class UsersMessage {
                 }
                 return new ResponseEntity<List<String>>(ms,HttpStatus.OK);
             }   
-            System.out.println("Admin Please login first!");
-            return new ResponseEntity<List<String>>(HttpStatus.BAD_GATEWAY);
+            msg = "Admin Please login first!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
             
         }catch(Exception e){
-            System.out.println(e.toString());
-            return new ResponseEntity<List<String>>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 }

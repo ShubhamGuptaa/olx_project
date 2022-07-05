@@ -309,7 +309,7 @@ public class Authenticate {
 
     // Get all Active users list
     @GetMapping("/admin/active_users")
-    public ResponseEntity<List<ActiveUsers>> getActiveUsers(){
+    public ResponseEntity<?> getActiveUsers(){
         if (checkAdmin == true){
            
             if(serviceUsers.activeUsers() != null){
@@ -317,18 +317,21 @@ public class Authenticate {
             }
             else{
                 msg = "No Active Users Right Now!";
-                System.out.println(msg);
+                return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
+                // System.out.println(msg);
             }
         }else{
             System.out.println("You are not an Admin!");
+            msg = "You are not an Admin. LogIn First!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
-        return new ResponseEntity<List<ActiveUsers>>(HttpStatus.BAD_GATEWAY);
+      
     }
 
 
     // Admin can get all list of users
     @GetMapping("/admin/get_all_users")
-    public ResponseEntity<List<Register>> getAllUsers(){
+    public ResponseEntity<?> getAllUsers(){
         if (checkAdmin == true){
            
             if(serviceUsers.getAllUsers() != null){
@@ -336,12 +339,13 @@ public class Authenticate {
             }
             else{
                 msg = "No Registered User Right Now!";
-                System.out.println(msg);
+                return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
             }
         }else{
-            System.out.println("You are not an Admin!");
+            msg = "You are not an Admin. LogIn First!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
-        return new ResponseEntity<List<Register>>(HttpStatus.BAD_GATEWAY);
+        
     }
 
     // Admin can update user details
@@ -418,7 +422,7 @@ public class Authenticate {
 
     // Admin can list all the product of the specific user
     @GetMapping("admin/list_product_by_user")
-    public ResponseEntity<List<Product>> adminListProductByUser(@RequestBody ListProductByEmail listProductByEmail){
+    public ResponseEntity<?> adminListProductByUser(@RequestBody ListProductByEmail listProductByEmail){
         if(checkAdmin == true){
             List<Register> allUsers = serviceUsers.getAllUsers();
             for(Register a: allUsers){
@@ -427,10 +431,10 @@ public class Authenticate {
                 } 
             }
             msg = " email not found!";
-           return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }else{
-            System.out.println("You are not an admin!");
-            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+            msg = "You are not an admin!";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
     }
 

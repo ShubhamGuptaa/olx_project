@@ -59,7 +59,7 @@ public class UsersProduct {
 
     // list product of a user
     @GetMapping("/user/list_product")
-    public ResponseEntity<List<Product>> listProductByUser(@RequestBody ListProductByEmail listProductByEmail) {
+    public ResponseEntity<?> listProductByUser(@RequestBody ListProductByEmail listProductByEmail) {
         List<Register> allUsers = serviceUsers.getAllUsers();
         for (Register a : allUsers) {
             if (a.getEmail().equals(listProductByEmail.getEmail())) {
@@ -67,14 +67,13 @@ public class UsersProduct {
             }
         }
         msg = " email not found!";
-        System.out.println(msg);
-        return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+        return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
 
     }
 
     // Get Contact details of any product
     @GetMapping("/user/get/contact_details_of_any_product/{id}")
-    public ResponseEntity<Contact> contactDetails(@PathVariable("id") long id) {
+    public ResponseEntity<?> contactDetails(@PathVariable("id") long id) {
         List<Product> products = userProductService.getAllProducts();
         for (Product a : products) {
             if (a.getId().equals(id)) {
@@ -83,20 +82,18 @@ public class UsersProduct {
             }
         }
         msg = "Id is not associated with any product!";
-        System.out.println(msg);
-        return new ResponseEntity<Contact>(HttpStatus.BAD_GATEWAY);
+        return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
     }
 
     // List all the products available
     @GetMapping("/user/list_all_product")
-    public ResponseEntity<List<Product>> getAllProduct() {
+    public ResponseEntity<?> getAllProduct() {
         List<Product> prod = userProductService.getAllProducts();
-        if (prod != null) {
-            return new ResponseEntity<List<Product>>(prod, HttpStatus.OK);
+        if (prod.isEmpty()) {
+            msg = "No product available";
+            return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         } else {
-            msg = "No product available ";
-            System.out.println(msg);
-            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<List<Product>>(prod, HttpStatus.OK);
         }
     }
 
@@ -168,72 +165,70 @@ public class UsersProduct {
 
     // Admin can list all the expired product
     @GetMapping("/admin/list_of_expired_product")
-    public ResponseEntity<List<SoldProducts>> listOfExpiredItems() {
+    public ResponseEntity<?> listOfExpiredItems() {
         try {
             if (Authenticate.checkAdmin == true) {
                 return new ResponseEntity<List<SoldProducts>>(userProductService.ExpiredProductList(), HttpStatus.OK);
             } else {
-                System.out.println("Please login as an admin");
-                return new ResponseEntity<List<SoldProducts>>(HttpStatus.BAD_GATEWAY);
+                msg = "Please login as an admin";
+                return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
             }
         } catch (Exception e) {
-            System.out.println(e.toString());
-            return new ResponseEntity<List<SoldProducts>>(HttpStatus.BAD_GATEWAY);
+            
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 
     // User can search product by product name
     @GetMapping("/user/search_product_byName")
-    public ResponseEntity<List<Product>> searchProducts(@RequestParam("name") String name) {
+    public ResponseEntity<?> searchProducts(@RequestParam("name") String name) {
         try {
             return new ResponseEntity<List<Product>>(userProductService.searchProducts(name), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 
     // User can search product by product price
     @GetMapping("/user/search_product_byPrice")
-    public ResponseEntity<List<Product>> searchProductsPrice(@RequestParam("price") String price) {
+    public ResponseEntity<?> searchProductsPrice(@RequestParam("price") String price) {
         try {
             return new ResponseEntity<List<Product>>(userProductService.searchProducts(price), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
-            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 
     // User can search product by location
     @GetMapping("/user/search_product_byLocation")
-    public ResponseEntity<List<Product>> searchProductsLocation(@RequestParam("location") String location) {
+    public ResponseEntity<?> searchProductsLocation(@RequestParam("location") String location) {
         try {
             return new ResponseEntity<List<Product>>(userProductService.searchProductsByLocation(location), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
-            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 
     // Filter products on the basis of price (Low to High)
     @GetMapping("/user/sort_productByPrice_low_to_high")
-    public ResponseEntity<List<Product>> sortProductByPrice_L_H() {
+    public ResponseEntity<?> sortProductByPrice_L_H() {
         try {
             return new ResponseEntity<List<Product>>(userProductService.sortBypriceLToH(),HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 
     // Filter products on the basis of price (High to Low)
     @GetMapping("/user/sort_productByPrice_high_to_low")
-    public ResponseEntity<List<Product>> sortProductByPrice_H_L() {
+    public ResponseEntity<?> sortProductByPrice_H_L() {
         try {
             return new ResponseEntity<List<Product>>(userProductService.sortBypriceHToL(),HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<List<Product>>(HttpStatus.BAD_GATEWAY);
+            
+            return new ResponseEntity<String>(e.toString(),HttpStatus.BAD_GATEWAY);
         }
     }
 
