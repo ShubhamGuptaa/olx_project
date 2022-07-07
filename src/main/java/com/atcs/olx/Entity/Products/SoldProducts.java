@@ -33,7 +33,7 @@ public class SoldProducts {
 	@Column(nullable = false)
     private BigDecimal prod_price;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne
 	private Location location;
 	
 	@Enumerated(EnumType.STRING)
@@ -47,7 +47,7 @@ public class SoldProducts {
     private LocalDateTime sold_date = LocalDateTime.now();
 	
     @JsonBackReference
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Register register;
 
     public SoldProducts() {

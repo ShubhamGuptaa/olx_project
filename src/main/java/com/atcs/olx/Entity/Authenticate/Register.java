@@ -48,13 +48,13 @@ public class Register {
     @Column(nullable = false)
     private boolean isUserLoggedIn = false;
 
-    @OneToMany(mappedBy = "register")
+    @OneToMany(mappedBy = "register", cascade = CascadeType.ALL)
     private List<Product> product;
 
-    @OneToMany(mappedBy = "register")
+    @OneToMany(mappedBy = "register", cascade = CascadeType.ALL)
     private List<SoldProducts> soldProduct;
 
-    @OneToMany(mappedBy = "register")
+    @OneToMany(mappedBy = "register", cascade = CascadeType.ALL)
     private List<AllMessages> allMessages;
 
 
@@ -76,13 +76,9 @@ public class Register {
         this.allMessages = allMessages;
     }
 
-
-
     public Cart getCart() {
         return cart;
     }
-
-
 
     public void setCart(Cart cart) {
         this.cart = cart;

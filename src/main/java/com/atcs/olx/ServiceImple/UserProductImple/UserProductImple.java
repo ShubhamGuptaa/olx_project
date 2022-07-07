@@ -80,7 +80,10 @@ public class UserProductImple implements UserProductService{
                     if(register.isUserLoggedIn() == true){
                         SoldProducts sold = new SoldProducts(prod.getProd_name(),prod.getProd_price(),prod.getLocation(),prod.getCategory(),prod.getDescription(),register);
                         soldProductsRepo.save(sold);
+                        prod.setIsSold(true);
+                        productRepo.save(prod);
                         deleteProductById(id); 
+
                         return "Product brought Successfully!";
                     }
                 return "You are not loggedIn!";
@@ -120,8 +123,7 @@ public class UserProductImple implements UserProductService{
     public List<Product> sortBypriceHToL() {
         List<Product> products = productRepo.sortProductsHToL();
          return products;
-    }  
-    
+    }
 }
 
 

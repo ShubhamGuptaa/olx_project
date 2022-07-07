@@ -57,10 +57,10 @@ public class Authenticate {
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
         else if(serviceUsers.isValidPassword(register.getPassword()) == false){
-            msg = "Password is not valid! (e.g: 8 characters length, 2 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
+            msg = "Password is not valid! (e.g: 8 characters length, 1 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
-        else if(register.getPhone_number().length() < 10){
+        else if(register.getPhone_number().length() < 10 || register.getPhone_number().length() > 10){
             msg = "Incorrect phone number!";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
@@ -110,8 +110,7 @@ public class Authenticate {
             }
             msg = "No account with this email id!";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);           
-        }
-     
+        } 
     }
 
     //  user login/SignIn
@@ -123,7 +122,7 @@ public class Authenticate {
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
         else if(serviceUsers.isValidPassword(signIn.getPassword()) == false){
-            msg = "Password is not valid! (e.g: 8 characters length, 2 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
+            msg = "Password is not valid! (e.g: 8 characters length, 1 letters in Upper Case, 1 Special Character (!@#$&*), 1 numerals (0-9) )";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
         else {
@@ -191,7 +190,7 @@ public class Authenticate {
             msg = "Password is not valid! (e.g: 8 characters length, 2 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
-        else if(admin_register.getPhone_number().length() < 10){
+        else if(admin_register.getPhone_number().length() < 10 || admin_register.getPhone_number().length() > 10){
             msg = "Incorrect phone number!";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
@@ -260,7 +259,7 @@ public class Authenticate {
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
         else if(serviceUsers.isValidPassword(forgot.getPassword()) == false){
-            msg = "Admin password is not valid! (e.g: 8 characters length, 2 letters in Upper Case, 1 Special Character (!@#$&*), 2 numerals (0-9), 3 letters in Lower Case )";
+            msg = "Admin password is not valid! (e.g: 8 characters length, 1 letters in Upper Case, 1 Special Character (!@#$&*), 1 numerals (0-9) )";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
         else {
@@ -318,10 +317,8 @@ public class Authenticate {
             else{
                 msg = "No Active Users Right Now!";
                 return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
-                // System.out.println(msg);
             }
         }else{
-            System.out.println("You are not an Admin!");
             msg = "You are not an Admin. LogIn First!";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
@@ -365,7 +362,7 @@ public class Authenticate {
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
 
         }
-        msg = "You are not an admin!";
+        msg = "You are not an admin! Please logIn!";
         return new ResponseEntity<String>(msg,HttpStatus.BAD_REQUEST);
     }
     
@@ -385,7 +382,7 @@ public class Authenticate {
                 return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
             }
         } else{
-            msg = "You are not an admin!";
+            msg = "You are not an admin! Please logIn!";
             return new ResponseEntity<String>(msg,HttpStatus.BAD_GATEWAY);
         }
 

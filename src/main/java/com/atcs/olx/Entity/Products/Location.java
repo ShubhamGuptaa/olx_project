@@ -35,6 +35,9 @@ public class Location {
 	@OneToOne(mappedBy="location",cascade = CascadeType.ALL)
 	Product product;
 
+	@OneToOne(cascade = CascadeType.ALL)
+	SoldProducts soldProducts;
+
 	public Location() {
 	}
 

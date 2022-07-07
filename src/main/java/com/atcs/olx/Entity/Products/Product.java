@@ -52,14 +52,14 @@ public class Product {
     private boolean isSold = false;
 
     @JsonBackReference
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Register register;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private Cart cart;
 
     public Product(Long id, String prod_name, BigDecimal prod_price, Location location, Category category,
-            String description, LocalDateTime date, boolean isSold, Register register, Cart cart) {
+            String description, LocalDateTime date, boolean isSold, Register register) {
         this.id = id;
         this.prod_name = prod_name;
         this.prod_price = prod_price;
@@ -69,16 +69,9 @@ public class Product {
         this.date = date;
         this.isSold = isSold;
         this.register = register;
-        this.cart = cart;
+    
     }
 
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
 
     public Register getRegister() {
         return register;

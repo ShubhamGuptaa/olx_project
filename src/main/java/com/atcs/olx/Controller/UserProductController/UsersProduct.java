@@ -134,7 +134,7 @@ public class UsersProduct {
             msg = "Please logIn first!";
             return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
         } catch (Exception e) {
-            msg = "Already added to the cart!";
+            msg = "No any product found with this id!";
             return new ResponseEntity<String>(msg, HttpStatus.BAD_GATEWAY);
         }
 
